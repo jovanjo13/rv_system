@@ -11,8 +11,8 @@ Item {
 
     RadioButton{
         id: button_ressource
-        x: 11
-        y: 0
+        x: 41
+        y: 60
         width: 200
         height: 45
         checked: true
@@ -35,8 +35,8 @@ Item {
 
     RadioButton{
         id: button_person
-        x: 11
-        y: 119
+        x: 41
+        y: 261
         width: 200
         height: 45
         text: "Person"
@@ -44,10 +44,10 @@ Item {
         onClicked: {
             button_ressource.checked = false
             button_department.checked = false
-            text1.text = "First name"
+            text1.text = "Last name"
             text1.visible = true
             textField1.visible = true
-            text2.text = "Last name"
+            text2.text = "First name"
             text2.visible = true
             textField2.visible = true
             text3.text = "Department"
@@ -59,8 +59,8 @@ Item {
     RadioButton{
         text: "Department"
         id: button_department
-        x: 11
-        y: 60
+        x: 41
+        y: 159
         width: 200
         height: 45
         checked: false
@@ -80,8 +80,8 @@ Item {
 
     Text {
         id: text2
-        x: 11
-        y: 170
+        x: 388
+        y: 72
         width: 124
         height: 21
         text: qsTr("Ressource")
@@ -90,8 +90,8 @@ Item {
 
     TextField {
         id: textField2
-        x: 206
-        y: 161
+        x: 648
+        y: 70
 
 
 
@@ -99,8 +99,8 @@ Item {
 
     Text {
         id: text1
-        x: 11
-        y: 240
+        x: 388
+        y: 171
         width: 129
         height: 21
         font.pixelSize: 12
@@ -109,8 +109,8 @@ Item {
 
     TextField {
         id: textField1
-        x: 206
-        y: 230
+        x: 648
+        y: 169
         visible: false
     }
 
@@ -118,8 +118,8 @@ Item {
 
     Text {
         id: text3
-        x: 11
-        y: 318
+        x: 388
+        y: 274
         width: 129
         height: 19
         visible: false
@@ -128,15 +128,15 @@ Item {
 
     TextField {
         id: textField3
-        x: 206
-        y: 308
+        x: 648
+        y: 271
         visible: false
     }
 
     Button {
         id: button
-        x: 628
-        y: 373
+        x: 484
+        y: 418
         text: qsTr("Save")
         onClicked: {
             //To do JS Code
