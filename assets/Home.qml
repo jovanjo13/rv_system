@@ -15,7 +15,7 @@ Item {
         height: parent.height
         onClicked: function(date){
             //textEdit.text = date
-            slay.currentIndex = input
+            //slay.currentIndex = input
         }
     }
 

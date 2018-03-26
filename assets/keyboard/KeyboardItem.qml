@@ -26,6 +26,7 @@ Item {
     signal switchSource(string source)
     signal enterClicked()
 
+
     Text {
         id: proxyMainTextItem
         color: "#F2F2F2"
@@ -121,8 +122,7 @@ Item {
                                     case "shift":
                                         root.allUpperCase = !root.allUpperCase
                                         return;
-                                    case "backspace":
-                                        root.keyClicked('\b');
+                                    case "backspace":                                        
                                         kb.del_pressed()
                                         return;
                                     case "enter":

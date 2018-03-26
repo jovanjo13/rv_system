@@ -5,6 +5,9 @@ import "."
 import "./keyboard"
 
 Item {
+    id: input_layout
+    property string name: "default"
+    property int window : background.add
 
     Keyboard {
         x: 0
@@ -21,7 +24,34 @@ Item {
             height: 91
             text: ""
             cursorPosition: 0
-            onSelectedTextChanged: console.log("beides")
+            property bool marked: false
+            onSelectedTextChanged: function() {
+                console.log("Start " + selectionStart)
+                console.log(selectionEnd)
+                console.log("CP" + cursorPosition)
+
+                var s = selectionStart
+                var e = selectionEnd
+
+                console.log(text.selectedText)
+
+                if(s == e){     //one position selected
+
+                    if(!marked) {
+                        text.cursorPosition = e
+                    }
+
+
+
+                    console.log("not match" + cursorPosition + marked)
+                    marked = false
+
+                }else {
+                    console.log("match" + cursorPosition + marked)
+                    marked = true
+                    console.log(text.cursorPosition)
+                }
+            }
 
             onLinkActivated: console.log("ac")
             onLinkHovered:  console.log("hov")
@@ -30,30 +60,65 @@ Item {
         }
 
         function set_char(key) {
-            console.log(key + text.cursorPosition)
+
             var txt1 = text.text
             var txt2 = txt1.slice(0, text.cursorPosition) + key + txt1.slice(text.cursorPosition);
+
+            var cp = text.cursorPosition
             text.text = txt2
-            text.cursorPosition +=1
+            text.cursorPosition = cp + 1
+
         }
 
         function del_pressed() {
-            var str = text.text
-            //text.cursorPosition = 0
-            if(str.length <= 1) {
-                str = str.substring(0, text.text.length-1)
-            }else {
-                str = str.substring(0,text.text.length-2)
-            }
-            text.text = str
-            text.cursorPosition = text.text.length
 
-            //text.cursorPosition = text.text.length
-            console.log(text.cursorPosition)
+            var str = text.text
+            var cp
+
+            console.log(text.marked)
+
+
+
+            if(text.marked == true) {
+                del_selected_text()
+                return
+            }
+
+            if(text.cursorPosition <= 0) {
+                cp = text.cursorPosition
+
+            }else {
+                cp = text.cursorPosition - 1
+            }
+
+            str = str.slice(0, cp) + str.slice(text.cursorPosition);
+
+            text.cursorPosition = cp
+            text.text = str
+            text.cursorPosition = cp
+
+            console.log("end dp cp " + cp)
+        }
+
+        function del_selected_text() {
+            var s = text.selectionStart
+            var e = text.selectionEnd
+            console.log("dst" + s + e)
+
+            var str = text.text
+            str = str.slice(0,s) + str.slice(e)
+            console.log(str)
+            text.cursorPosition = 0
+
+            text.text = str
+
+            text.marked = false
+            text.cursorPosition = s
+
         }
 
         function ent_pressed() {
-            text.text += "\n"
+
         }
 
         Text {
@@ -63,7 +128,7 @@ Item {
             width: 144
             height: 91
             color: "#f7f6f6"
-            text: qsTr("Description:")
+            text: input_layout.name
             font.pixelSize: 19
         }
 
