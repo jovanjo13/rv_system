@@ -4,9 +4,81 @@ import QtQuick.Layouts 1.3
 import "."
 import "./keyboard"
 
+
 Item {
     id: add
+    property int edit_button: 1
 
+    Connections{
+        target: slay
+        onEnt_pressed: {
+            if(slay.lastIndex != background.add){
+                return
+            }
+
+            console.log(str)
+            setInput(str)
+
+        }
+
+    }
+
+    function clear() {
+        textField2.text = ""
+        textField1.text = ""
+        textField3.text = ""
+
+    }
+
+    function setInput(str) {
+        for(var i = 0; i < add.children.length; i++){
+            if(add.children[i].tfID == add.edit_button){
+                add.children[i].text = str
+
+            }
+        }
+    }
+
+    function getInput() {
+        var id = add.edit_button
+        var name
+        var text
+
+        for(var i = 0; i < add.children.length; i++){
+            if(add.children[i].tfID == id){
+                text = add.children[i].text
+            }
+
+            if(add.children[i].textID == id) {
+                name = add.children[i].text
+            }
+        }
+        console.log(name + text)
+        /*
+        slay.descriptionET = name
+        slay.editText = text
+        slay.lastIndex = background.add
+        slay.input()
+        slay.currentIndex = background.input
+*/
+        slay.edit(name,text)
+        slay.lastIndex = background.add
+        slay.currentIndex = background.input
+    }
+
+    function oneLine(text){
+        clear()
+        text2.text = text
+        text2.visible = true
+        textField2.visible = true
+        button2.visible = true
+        text1.visible = false
+        textField1.visible = false
+        button1.visible = false
+        text3.visible = false
+        textField3.visible = false
+        button3.visible = false
+    }
 
 
     RadioButton{
@@ -20,15 +92,7 @@ Item {
         onClicked: {
             button_department.checked = false
             button_person.checked = false
-
-            text1.text = "Ressource"
-            text1.visible = true
-            textField1.visible = true
-            text2.visible = false
-            textField2.visible = false
-            text3.visible = false
-            textField3.visible = false
-
+            oneLine("Ressource")
         }
 
     }
@@ -44,15 +108,20 @@ Item {
         onClicked: {
             button_ressource.checked = false
             button_department.checked = false
-            text1.text = "Last name"
-            text1.visible = true
-            textField1.visible = true
-            text2.text = "First name"
+            clear()
+
+            text2.text = "Last name"
             text2.visible = true
             textField2.visible = true
+            text1.text = "First name"
+            text1.visible = true
+            textField1.visible = true
             text3.text = "Department"
             text3.visible = true
             textField3.visible = true
+            button1.visible = true
+            button2.visible = true
+            button3.visible = true
         }
     }
 
@@ -67,74 +136,73 @@ Item {
         onClicked: {
             button_ressource.checked = false
             button_person.checked = false
-            text1.text = "Department"
-            text1.visible = true
-            textField1.visible = true
-            text2.visible = false
-            textField2.visible = false
-            text3.visible = false
-            textField3.visible = false
+            oneLine("Department")
         }
     }
 
 
     Text {
-        id: text2
-        x: 388
+        id: text1
+        property int textID: 0
+        x: 283
         y: 72
         width: 124
         height: 21
-        text: qsTr("Ressource")
-        font.pixelSize: 12
-    }
-
-    TextField {
-        id: textField2
-        x: 648
-        y: 70
-
-
-
-    }
-
-    Text {
-        id: text1
-        x: 388
-        y: 171
-        width: 129
-        height: 21
-        font.pixelSize: 12
         visible: false
+        font.pixelSize: 15
+
     }
 
     TextField {
         id: textField1
-        x: 648
-        y: 169
+        x: 404
+        y: 70
+        property int tfID: 0
         visible: false
+    }
+
+    Text {
+        id: text2
+        property int textID: 1
+        x: 283
+        y: 171
+        width: 129
+        height: 21
+        text: qsTr("Ressource")
+        font.pixelSize: 15
+
+    }
+
+    TextField {
+        id: textField2
+        x: 404
+        y: 169
+        property int tfID: 1
     }
 
 
 
     Text {
         id: text3
-        x: 388
+        property int textID: 2
+        x: 281
         y: 274
         width: 129
         height: 19
         visible: false
-        font.pixelSize: 12
+        font.pixelSize: 15
     }
 
     TextField {
         id: textField3
-        x: 648
+        x: 404
         y: 271
         visible: false
+        property int tfID: 2
     }
 
     Button {
-        id: button
+        id: button_save
         x: 484
         y: 418
         text: qsTr("Save")
@@ -145,13 +213,52 @@ Item {
     }
 
     Button {
-        id: button1
+        id: button_cancel
         x: 628
         y: 418
         text: qsTr("Cancel")
 
         onClicked: function() {
             slay.currentIndex = 0
+
+            //Zurücksetzen
+        }
+    }
+
+    Button {
+        id: button1
+        x: 628
+        y: 69
+        visible: false
+        text: qsTr("Edit")
+        onClicked: function(){
+            add.edit_button = 0
+            getInput()
+        }
+    }
+
+    Button {
+        id: button2
+        x: 628
+        y: 168
+        visible: true
+        text: qsTr("Edit")
+        onClicked: function(){
+            add.edit_button = 1
+            getInput()
+        }
+    }
+
+
+    Button {
+        id: button3
+        x: 628
+        y: 270
+        visible: false
+        text: qsTr("Edit")
+        onClicked: function(){
+            add.edit_button = 2
+            getInput()
         }
     }
 

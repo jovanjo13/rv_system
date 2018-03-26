@@ -52,4 +52,5 @@ DISTFILES += \
     assets/keyboard/Key.qml \
     assets/keyboard/Keyboard.qml \
     assets/keyboard/KeyboardItem.qml \
-    assets/Input.qml
+    assets/Input.qml \
+    assets/Detail.qml

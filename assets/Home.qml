@@ -15,7 +15,7 @@ Item {
         height: parent.height
         onClicked: function(date){
             //textEdit.text = date
-            //slay.currentIndex = input
+            slay.currentIndex = background.input
         }
     }
 
@@ -86,7 +86,7 @@ Item {
         text: "New Entry"
 
         onClicked: function() {
-            slay.currentIndex = 1
+            slay.currentIndex = background.newentry
 
         }
     }
@@ -101,7 +101,8 @@ Item {
         text: "Add Component"
 
         onClicked: function() {
-            slay.currentIndex = 2
+            slay.currentIndex = background.add
+
         }
     }
 

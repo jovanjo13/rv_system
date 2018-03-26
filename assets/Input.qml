@@ -6,8 +6,6 @@ import "./keyboard"
 
 Item {
     id: input_layout
-    property string name: "default"
-    property int window : background.add
 
     Keyboard {
         x: 0
@@ -17,108 +15,97 @@ Item {
         id: kb
 
         TextArea {
-            id: text
+            id: text_area
             x: 177
             y: 21
             width: 588
             height: 91
             text: ""
-            cursorPosition: 0
+            cursorPosition: text_area.text.length
             property bool marked: false
             onSelectedTextChanged: function() {
-                console.log("Start " + selectionStart)
-                console.log(selectionEnd)
-                console.log("CP" + cursorPosition)
-
                 var s = selectionStart
-                var e = selectionEnd
-
-                console.log(text.selectedText)
+                var e = selectionEnd                
 
                 if(s == e){     //one position selected
 
                     if(!marked) {
-                        text.cursorPosition = e
+                        text_area.cursorPosition = e
                     }
 
-
-
-                    console.log("not match" + cursorPosition + marked)
                     marked = false
 
-                }else {
-                    console.log("match" + cursorPosition + marked)
-                    marked = true
-                    console.log(text.cursorPosition)
+                }else {                   
+                    marked = true                   
                 }
             }
+        }
 
-            onLinkActivated: console.log("ac")
-            onLinkHovered:  console.log("hov")
-
-            //linkHovered: console.log("hov")
+        Connections{
+            target: slay
+            onEdit: {   //Parameter STR name STR text
+                input_name.text = name
+                text_area.text = text
+                text_area.cursorPosition = text_area.text.length
+            }
         }
 
         function set_char(key) {
 
-            var txt1 = text.text
-            var txt2 = txt1.slice(0, text.cursorPosition) + key + txt1.slice(text.cursorPosition);
+            var txt1 = text_area.text
+            var txt2 = txt1.slice(0, text_area.cursorPosition) + key + txt1.slice(text_area.cursorPosition);
 
-            var cp = text.cursorPosition
-            text.text = txt2
-            text.cursorPosition = cp + 1
+            var cp = text_area.cursorPosition
+            text_area.text = txt2
+            text_area.cursorPosition = cp + 1
 
         }
 
         function del_pressed() {
 
-            var str = text.text
+            var str = text_area.text
             var cp
 
-            console.log(text.marked)
-
-
-
-            if(text.marked == true) {
+            if(text_area.marked == true) {
                 del_selected_text()
                 return
             }
 
-            if(text.cursorPosition <= 0) {
-                cp = text.cursorPosition
+            if(text_area.cursorPosition <= 0) {
+                cp = text_area.cursorPosition
 
             }else {
-                cp = text.cursorPosition - 1
+                cp = text_area.cursorPosition - 1
             }
 
-            str = str.slice(0, cp) + str.slice(text.cursorPosition);
+            str = str.slice(0, cp) + str.slice(text_area.cursorPosition);
 
-            text.cursorPosition = cp
-            text.text = str
-            text.cursorPosition = cp
-
-            console.log("end dp cp " + cp)
+            text_area.cursorPosition = cp
+            text_area.text = str
+            text_area.cursorPosition = cp
         }
 
         function del_selected_text() {
-            var s = text.selectionStart
-            var e = text.selectionEnd
-            console.log("dst" + s + e)
+            var s = text_area.selectionStart
+            var e = text_area.selectionEnd
 
-            var str = text.text
-            str = str.slice(0,s) + str.slice(e)
-            console.log(str)
-            text.cursorPosition = 0
+            var str = text_area.text
+            str = str.slice(0,s) + str.slice(e)          
+            text_area.cursorPosition = 0
 
-            text.text = str
+            text_area.text = str
 
-            text.marked = false
-            text.cursorPosition = s
+            text_area.marked = false
+            text_area.cursorPosition = s
 
         }
 
         function ent_pressed() {
+            slay.ent_pressed(text_area.text)
+            text_area.cursorPosition = 0
+            text_area.text = ""
 
+            slay.currentIndex = slay.lastIndex
         }
 
         Text {
@@ -126,9 +113,8 @@ Item {
             x: 27
             y: 21
             width: 144
-            height: 91
+            height: 37
             color: "#f7f6f6"
-            text: input_layout.name
             font.pixelSize: 19
         }
 
@@ -163,6 +149,20 @@ Item {
             color: "#fdf4f4"
             text: qsTr("ENT")
             font.pixelSize: 20
+        }
+
+        Button {
+            id: button_cancel
+            x: 27
+            y: 64
+            width: 131
+            height: 41
+            text: qsTr("Cancel")
+            onClicked: function(){
+                slay.currentIndex = slay.lastIndex
+
+                //Zurücksetzen
+            }
         }
 
 
