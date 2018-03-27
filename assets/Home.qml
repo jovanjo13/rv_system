@@ -61,7 +61,7 @@ Item {
             id: myModel
             ListElement {
                 desc : "Besprechung"
-                res :   "Besprechungsraum 1"
+                res :   "Raum 1"
                 dfrom : "12.01.2018"
                 tfrom : "11:00"
                 tto :   "12:00"
@@ -82,10 +82,10 @@ Item {
             ListElement {
 
                 desc :  "Beides"
-                res :   "Raum 2"
+                res :   "Firmenauto 1"
                 dfrom : "12.01.2018"
                 tfrom : "14:00"
-                tto :   "14:30"
+                tto :   "17:00"
                 dto :   "12.01.2018"
             }
 
