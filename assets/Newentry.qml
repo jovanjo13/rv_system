@@ -9,7 +9,7 @@ Item {
 
     Text {
         x: 24
-        y: 173
+        y: 158
         width: 158
         height: 24
         id: text_res
@@ -20,30 +20,6 @@ Item {
         id: col
         x: 24
         y: 211
-
-        RadioButton{
-            checked: true
-            text: "Raum 1"
-            onClicked: {
-
-
-            }
-
-        }
-
-        RadioButton{
-            text: "Raum 2"
-            onClicked: {
-
-            }
-        }
-
-        RadioButton{
-            text: "Firmenauto"
-            onClicked: {
-
-            }
-        }
     }
 
     Text {
@@ -60,8 +36,8 @@ Item {
         x: 24
         y: 57
         width: 278
-        height: 95
-        text: qsTr("Here is the description you can edit\nOr something")
+        height: 88
+        text: qsTr("Here is the description you can edit        kjkjjjjjjjjjjjjjjkjkjjkOr something")
     }
     ColumnLayout {
         x: 403
@@ -77,122 +53,12 @@ Item {
             text :  "From"
         }
 
-        Row {
-            TextField {
-                id: fromtf_d
-                text: "12"
-                width: 40
-            }
-
-            Text{
-                text: "_"
-                //topPadding: 5
-
-            }
-
-            TextField {
-                id: fromtf_m
-                text: "01"
-                width: 40
-            }
-
-            Text{
-                text: "_"
-                font.pointSize: 15
-
-            }
-
-            TextField {
-                id: fromtf_y
-                text: "18"
-                width: 40
-            }
-
-            Text{
-                text: "|"
-                //topPadding: 10
-            }
-
-            TextField {
-                id: fromtf_h
-                text: "10"
-                width: 40
-            }
-
-            Text {
-                text: ":"
-                //topPadding: 11
-            }
-
-            TextField {
-                id: fromtf_min
-                text: "00"
-                width: 40
-            }
-
-        }
-
         Text {
             x: 24
             y: 238
             width: 132
             height: 30
             text :  "To"
-        }
-
-        Row {
-            TextField {
-                id: totf_d
-                text: "12"
-                width: 40
-            }
-
-            Text{
-                text: "_"
-                //topPadding: 5
-
-            }
-
-            TextField {
-                id: totf_m
-                text: "01"
-                width: 40
-            }
-
-            Text{
-                text: "_"
-                font.pointSize: 15
-
-            }
-
-            TextField {
-                id: totf_y
-                text: "18"
-                width: 40
-            }
-
-            Text{
-                text: "|"
-                //topPadding: 10
-            }
-
-            TextField {
-                id: totf_h
-                text: "09"
-                width: 40
-            }
-
-            Text {
-                text: ":"
-                //topPadding: 11
-            }
-
-            TextField {
-                id: totf_min
-                text: "00"
-                width: 40
-            }
-
         }
 
 
@@ -229,21 +95,77 @@ Item {
     }
 
     Button {
-        id: button
-        x: 656
-        y: 378
+        id: button_save
+        x: 484
+        y: 418
         text: qsTr("Save")
+        onClicked: {
+
+        }
     }
 
     Button {
-        id: button1
-        x: 656
-        y: 420
+        id: button_cancel
+        x: 628
+        y: 418
         text: qsTr("Cancel")
 
         onClicked: function() {
-            slay.currentIndex = 0
+
+            slay.currentIndex = background.home
         }
+    }
+
+
+    Slider {
+        id: sliderVertical
+        x: 24
+        y: 211
+        orientation: Qt.Horizontal
+        onStateChanged: function(){
+            console.log(sliderVertical.state)
+            console.log(sliderVertical.value)
+
+        }
+    }
+
+    ListView{
+        x: 24
+        y: 283
+        width: 155
+        height: 109
+        model: resource_model
+        delegate: Text {
+
+            text: resource
+        }
+        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+        focus: true
+    }
+
+    ListModel{
+        id: resource_model
+
+        ListElement{
+            resource: "isdesso"
+        }
+
+        ListElement{
+            resource: "isdesso"
+        }
+
+        ListElement{
+            resource: "isdesso"
+        }
+
+        ListElement{
+            resource: "isdesso"
+        }
+
+        ListElement{
+            resource: "isdesso"
+        }
+
     }
 
 

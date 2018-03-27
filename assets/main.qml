@@ -17,6 +17,7 @@ ApplicationWindow {
     property int add: 2
     property int detail: 3
     property int input: 4
+    property string url: "192.168.0.26:30000/"
 
     StackLayout{
             id: slay
@@ -27,23 +28,7 @@ ApplicationWindow {
 
             signal ent_pressed(string str)
             signal edit(string name, string text)
-/*
-            property string descriptionET: "default"
-            property string editText: ""
-            signal input()
-            signal add_text()
-            signal ent_pressed(string str)
-            onEnt_pressed: function(str){
-                editText = str
 
-                if(slay.lastIndex == background.add){
-                    slay.add_text()
-                }
-
-                slay.currentIndex = slay.lastIndex
-
-            }
-*/
 
             Home {
 

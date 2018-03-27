@@ -14,8 +14,25 @@ Item {
         width: parent.width - x
         height: parent.height
         onClicked: function(date){
-            //textEdit.text = date
-            slay.currentIndex = background.input
+            console.log(JSON.stringify(date))
+            get_ressources()
+        }
+
+        function get_ressources(){
+            var req = new XMLHttpRequest();
+            req.open("GET", background.url + "sql_get/resources");
+
+            req.onreadystatechange = function() {
+              if (req.readyState == XMLHttpRequest.DONE) {
+                // what you want to be done when request is successfull
+                  console.log("ja" + JSON.stringify(req))
+              }
+            }
+            req.onerror = function(){
+              // what you want to be done when request failed
+                console.log("error")
+            }
+            req.send()
         }
     }
 
@@ -29,14 +46,14 @@ Item {
 
 
         TableViewColumn {
-            role: "res"; title: "Ressource"; width: 198
+            role: "res"; title: "Ressource"; width: 218
         }
 
         TableViewColumn {
-            role: "tfrom"; title: "From"; width: 100
+            role: "tfrom"; title: "From"; width: 90
         }
         TableViewColumn {
-            role: "tto"; title: "To"; width: 100
+            role: "tto"; title: "To"; width: 90
         }
     }
 

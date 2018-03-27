@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.3
+
 import "."
 import "./keyboard"
 
@@ -8,6 +9,7 @@ import "./keyboard"
 Item {
     id: add
     property int edit_button: 1
+    property int rbutton: 0
 
     Connections{
         target: slay
@@ -15,8 +17,6 @@ Item {
             if(slay.lastIndex != background.add){
                 return
             }
-
-            console.log(str)
             setInput(str)
 
         }
@@ -53,14 +53,7 @@ Item {
                 name = add.children[i].text
             }
         }
-        console.log(name + text)
-        /*
-        slay.descriptionET = name
-        slay.editText = text
-        slay.lastIndex = background.add
-        slay.input()
-        slay.currentIndex = background.input
-*/
+
         slay.edit(name,text)
         slay.lastIndex = background.add
         slay.currentIndex = background.input
@@ -92,9 +85,26 @@ Item {
         onClicked: {
             button_department.checked = false
             button_person.checked = false
+            rbutton = 0
             oneLine("Ressource")
         }
 
+    }
+
+    RadioButton{
+        text: "Department"
+        id: button_department
+        x: 41
+        y: 159
+        width: 200
+        height: 45
+        checked: false
+        onClicked: {
+            button_ressource.checked = false
+            button_person.checked = false
+            rbutton = 1
+            oneLine("Department")
+        }
     }
 
     RadioButton{
@@ -108,6 +118,7 @@ Item {
         onClicked: {
             button_ressource.checked = false
             button_department.checked = false
+            rbutton = 2
             clear()
 
             text2.text = "Last name"
@@ -124,22 +135,6 @@ Item {
             button3.visible = true
         }
     }
-
-    RadioButton{
-        text: "Department"
-        id: button_department
-        x: 41
-        y: 159
-        width: 200
-        height: 45
-        checked: false
-        onClicked: {
-            button_ressource.checked = false
-            button_person.checked = false
-            oneLine("Department")
-        }
-    }
-
 
     Text {
         id: text1
@@ -207,8 +202,52 @@ Item {
         y: 418
         text: qsTr("Save")
         onClicked: {
-            //To do JS Code
-            console.log(textField3.text)
+
+            var urlComponent
+            var comp = {}
+            switch(rbutton){
+                case 0: //Resource
+                        urlComponent = "resources"
+                        comp.resource = textField2.text
+                        break
+
+                case 1: //Department
+                        urlComponent = "department"
+                        comp.department = textField2.text
+                        break
+
+                case 2: //Person
+                        urlComponent = "persons"
+                        comp.firstName = textField1.text
+                        comp.lastName = textField2.text
+                        comp.section = textField3.text
+                        break
+            }
+
+            console.log(JSON.stringify(comp) + " " + urlComponent)
+            add_component(JSON.stringify(comp), urlComponent)
+            clear()
+
+        }
+        function add_component(strData, urlComponent){
+
+           var req = new XMLHttpRequest();
+           req.open("POST", url + "sql_post/" + urlComponent);
+           req.setRequestHeader('Content-type','application/json');
+           //req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+           req.onreadystatechange = function() {
+             if (req.readyState == XMLHttpRequest.DONE) {
+               // what you want to be done when request is successfull
+                 console.log(req.responseText)
+                 console.log("ja" + JSON.stringify(req.responseText))
+             }
+           }
+           req.onerror = function(){
+             // what you want to be done when request failed
+               console.log("error")
+           }
+           //console.log(req.toString())
+           req.send(strData)
         }
     }
 
@@ -219,9 +258,8 @@ Item {
         text: qsTr("Cancel")
 
         onClicked: function() {
-            slay.currentIndex = 0
-
-            //Zurücksetzen
+            clear()
+            slay.currentIndex = background.home
         }
     }
 
