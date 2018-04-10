@@ -299,6 +299,18 @@ Item {
         }
     }
 
+    Button {
+        id: button_reset
+        x: 769
+        y: 8
+        width: 23
+        height: 27
+        text: "R"
+        onClicked: function(){
+            console.log("reset")
+        }
+    }
+
 }
 
 

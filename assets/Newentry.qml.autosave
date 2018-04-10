@@ -139,6 +139,7 @@ Item {
 
     ListModel{
         id: resource_model
+        
 
         ListElement{
             resource: "isdesso"

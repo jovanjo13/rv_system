@@ -17,7 +17,7 @@ ApplicationWindow {
     property int add: 2
     property int detail: 3
     property int input: 4
-    property string url: "192.168.0.26:30000/"
+    property string url: "http://192.168.0.26:30000/"
 
     StackLayout{
             id: slay

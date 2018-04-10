@@ -6,34 +6,102 @@ import "./keyboard"
 
 Item {
     width:800
+    property string curDate: "2018-04-01"
+    signal resources_loaded(Object o)
+    id: home
 
     Calendar {
         id: calendar
         x: 400         //Change for relationship
         y: parent.y
-        width: parent.width - x
+        width: 400
         height: parent.height
+        selectedDate: "2018-04-01"
         onClicked: function(date){
-            console.log(JSON.stringify(date))
-            get_ressources()
+            var d = JSON.stringify(date).substring(1,11)
+            console.log(d)
+            curDate = d
+            //get_ressources()
+            //get_list()
+
         }
 
-        function get_ressources(){
+
+
+        function test(){
+            var http = new XMLHttpRequest()
+            var url = background.url + "sql_get"
+            var params = "num=22&num2=333";
+            http.open("POST", url, true);
+
+            // Send the proper header information along with the request
+            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //http.setRequestHeader("Content-type","application/json")
+            //http.setRequestHeader("Content-length", params.length);
+            //http.setRequestHeader("Connection", "close");
+
+            http.onreadystatechange = function() { // Call a function when the state changes.
+                if (http.readyState == 4) {
+                    if (http.status == 200) {
+                        console.log("ok")
+                    } else {
+                        console.log("error: " + http.status)
+                    }
+                }
+            }
+            http.send();
+        }
+
+        function get_list(){
+            console.log("getlist")
+            var date = curDate
             var req = new XMLHttpRequest();
-            req.open("GET", background.url + "sql_get/resources");
+            req.open("GET", background.url + "sql_get");
+            //req.setRequestHeader('Content-type','application/json');
+            req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-            req.onreadystatechange = function() {
-              if (req.readyState == XMLHttpRequest.DONE) {
-                // what you want to be done when request is successfull
-                  console.log("ja" + JSON.stringify(req))
-              }
+            req.onreadystatechange = function() { // Call a function when the state changes.
+                if (req.readyState == 4) {
+                    if (req.status == 200) {
+                        console.log("ok")
+                    } else {
+                        console.log("error: " + req.status)
+                    }
+                }
             }
-            req.onerror = function(){
-              // what you want to be done when request failed
-                console.log("error")
-            }
-            req.send()
+
+            /*req.onreadystatechange = function() {
+                console.log("stateChange" + req.statusText)
+                if (req.readyState == XMLHttpRequest.DONE) {
+                    console.log(req.responseText)
+                    var res = JSON.parse(req.responseText)
+                    console.log(JSON.stringify(res))
+
+                          console.log(res[0].datefrom)
+                          console.log(res[0].datefrom.substring(0,10))
+
+                          for(var i = 0; i < res.length; i++){
+                              myModel.append({
+                                                 fn   : res[i].firstName,
+                                                 ln   : res[i].lastName,
+                                                 desc : res[i].description,
+                                                 dfrom: res[i].datefrom,
+                                                 tfrom: res[i].datefrom
+
+
+
+                                             })
+                          }
+
+                }*/
+                req.onerror = function(){
+                    console.log("get_list ERROR")
+                }
+
+                req.send('date=' + date)
+
         }
+
     }
 
     TableView {
@@ -41,7 +109,7 @@ Item {
         x: parent.x
         y: parent.y
         height: 350
-        width: calendar.x
+        width: 400
         model: myModel
 
 
@@ -101,10 +169,32 @@ Item {
         width: 400
         height: 65
         text: "New Entry"
-
         onClicked: function() {
-            slay.currentIndex = background.newentry
+            get_ressources(function(r){
+                    resources_loaded(r)
+                    slay.currentIndex = background.newentry
+            })
 
+
+        }
+
+
+
+        function get_ressources(callback){
+            var req = new XMLHttpRequest();
+            req.open("GET", background.url + "sql_get/resources");
+
+            req.onreadystatechange = function() {
+              if (req.readyState === XMLHttpRequest.DONE) {
+                  var r = JSON.parse(req.responseText)
+                  console.log(JSON.stringify(r))
+                  callback(r)
+              }
+            }
+            req.onerror = function(){
+                console.log("get_ressources ERROR")
+            }
+            req.send()
         }
     }
 
