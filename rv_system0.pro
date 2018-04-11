@@ -53,4 +53,5 @@ DISTFILES += \
     assets/keyboard/Keyboard.qml \
     assets/keyboard/KeyboardItem.qml \
     assets/Input.qml \
-    assets/Detail.qml
+    assets/Detail.qml \
+    assets/DateSelection.qml

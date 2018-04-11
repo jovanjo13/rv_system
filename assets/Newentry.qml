@@ -7,6 +7,18 @@ import "./keyboard"
 Item {
     id: item1
 
+    function new_entry(){
+        textArea_description.text = ""
+        textField_firstName.text = ""
+        textField_lastName.text = ""
+        slid_h.hour = 12
+        slid_min.min = 30
+        from_text.text = slay.stringToDate(slay.curDate)
+        to_text.text = slay.stringToDate(slay.curDate)
+        pointer_from.visible = false
+        pointer_to.visible = true
+    }
+
     Text {
         x: 24
         y: 187
@@ -14,12 +26,6 @@ Item {
         height: 24
         id: text_res
         text : "Select ressource"
-    }
-
-    Column {
-        id: col
-        x: 24
-        y: 211
     }
 
     Text {
@@ -69,7 +75,7 @@ Item {
             y: 19
             width: 180
             height: 35
-            text: "LOLOLOLOLO"
+            text: ""
         }
 
         Button {
@@ -100,7 +106,7 @@ Item {
             y: 78
             width: 180
             height: 35
-            text: "LOLOLOLOLO"
+            text: ""
         }
 
         Button {
@@ -122,8 +128,6 @@ Item {
 
 
 
-
-
     Button {
         id: button_save
         x: 484
@@ -141,31 +145,46 @@ Item {
         text: qsTr("Cancel")
 
         onClicked: function() {
-
+            //TODO delete all
             slay.currentIndex = background.home
         }
     }
 
 
     ListView{
+        id: lv
         x: 24
         y: 230
         width: 278
         height: 221
         model: resource_model
-        delegate: Text {
+        delegate: Item{
+            width: parent.width
+            height: 30
 
-            text: resource
+            Text{
+                text:resource
+            }
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    console.log("clicked " + index)
+                    lv.currentIndex = index
+                }
+
+            }
         }
+
         highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
         focus: true
+
     }
 
     Connections{
         target: slay
         onResources_loaded:  {
-            pointer_from.visible = false
-            pointer_to.visible = true
+            new_entry()
+
             var resources = JSON.parse(o)
             resource_model.clear()
             for(var i = 0; i < resources.length; i++){
@@ -173,6 +192,8 @@ Item {
             }
         }
     }
+
+
 
     ListModel{
         id: resource_model
@@ -186,12 +207,17 @@ Item {
         height: 28
         value: 0.5
         onValueChanged: function(){
-            //console.log(slid_h.value * 12)
             console.log(Math.round(slid_h.value * 23))
             hour = Math.round(slid_h.value * 23)
+
+            if(pointer_from.visible == true){
+                time_from.text = slid_h.hour + ":" + slid_min.min
+            }else{
+                time_to.text = slid_h.hour + ":" + slid_min.min
+            }
         }
 
-        property int hour: 6
+        property int hour: 12
     }
 
     Slider {
@@ -203,12 +229,18 @@ Item {
         value: 0.5
         onValueChanged: function(){
             //console.log(slid_h.value * 12)
-            var val = Math.round(slid_min.value * 12)
+            var val = Math.round(slid_min.value * 11)
             console.log(val * 5)
-            hour = Math.round(slid_min.value * 23)
+            min = val * 5
+
+            if(pointer_from.visible == true){
+                time_from.text = slid_h.hour + ":" + slid_min.min
+            }else{
+                time_to.text = slid_h.hour + ":" + slid_min.min
+            }
         }
 
-        property int hour: 6
+        property int min: 30
     }
 
     Text {
@@ -265,10 +297,16 @@ Item {
                 pointer_from.visible = false
                 text = "From"
                 pointer_to.visible = true
+                slid_h.value = time_from.text.substring(0,2) /23
+                slid_min.value = time_from.text.substring(3,5) *60 /5
+
             }else{
                 pointer_to.visible = false
                 pointer_from.visible = true
                 text = "To"
+                slid_h.value = time_to.text.substring(0,2) /23
+                slid_min.value = time_to.text.substring(3,5) *60 /5
+
             }
         }
     }
@@ -309,7 +347,16 @@ Item {
         y: 202
         width: 162
         height: 33
-        text: qsTr("Select Date")
+        text: "Select Date"
+        onClicked: {
+            if(pointer_from.visible == true){
+                slay.select_date(from_text)
+            }else{
+                slay.select_date(to_text)
+            }
+
+            slay.currentIndex = background.dateSelection
+        }
     }
 
     Text {
@@ -335,23 +382,23 @@ Item {
     }
 
     Text {
-        id: text3
+        id: time_from
         x: 611
         y: 125
         width: 76
         height: 28
-        text: qsTr("12:00")
+        text: slid_h.hour + ":" + slid_min.min
         font.pointSize: 11
         verticalAlignment: Text.AlignVCenter
     }
 
     Text {
-        id: text4
+        id: time_to
         x: 611
         y: 161
         width: 76
         height: 28
-        text: qsTr("12:00")
+        text: slid_h.hour + ":" + slid_min.min
         verticalAlignment: Text.AlignVCenter
         font.pointSize: 11
     }

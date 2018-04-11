@@ -20,8 +20,7 @@ Item {
             var d = JSON.stringify(date).substring(1,11)
             console.log(d)
             slay.curDate = d
-            //get_ressources()
-            //get_list()
+            get_list()
 
         }
 
@@ -52,55 +51,39 @@ Item {
         }
 
         function get_list(){
-            console.log("getlist")
             var date = slay.curDate
             var req = new XMLHttpRequest();
-            req.open("GET", background.url + "sql_get");
+            req.open("GET", background.url + "sql_get?date=" + slay.curDate);
             //req.setRequestHeader('Content-type','application/json');
             req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-            req.onreadystatechange = function() { // Call a function when the state changes.
+            req.onreadystatechange = function() {
                 if (req.readyState == 4) {
                     if (req.status == 200) {
-                        console.log("ok")
+                        var arr = JSON.parse(req.responseText)
+
+                        entrymodel.clear()
+
+                        for(var i = 0; i < arr.length; i++){
+                            arr[i].timefrom = arr[i].datefrom.substring(11,16)
+                            arr[i].timeto = arr[i].dateto.substring(11,16)
+                            arr[i].datefrom = slay.stringToDate(arr[i].datefrom)
+                            arr[i].dateto = slay.stringToDate(arr[i].dateto)
+                            console.log(JSON.stringify(arr[i]))
+                            entrymodel.append(arr[i])
+                        }
                     } else {
                         console.log("error: " + req.status)
                     }
                 }
             }
+            req.onerror = function(){
+                console.log("get_list ERROR")
+            }
 
-            /*req.onreadystatechange = function() {
-                console.log("stateChange" + req.statusText)
-                if (req.readyState == XMLHttpRequest.DONE) {
-                    console.log(req.responseText)
-                    var res = JSON.parse(req.responseText)
-                    console.log(JSON.stringify(res))
-
-                          console.log(res[0].datefrom)
-                          console.log(res[0].datefrom.substring(0,10))
-
-                          for(var i = 0; i < res.length; i++){
-                              myModel.append({
-                                                 fn   : res[i].firstName,
-                                                 ln   : res[i].lastName,
-                                                 desc : res[i].description,
-                                                 dfrom: res[i].datefrom,
-                                                 tfrom: res[i].datefrom
-
-
-
-                                             })
-                          }
-
-                }*/
-                req.onerror = function(){
-                    console.log("get_list ERROR")
-                }
-
-                req.send('date=' + date)
+            req.send()
 
         }
-
     }
 
     TableView {
@@ -109,53 +92,23 @@ Item {
         y: parent.y
         height: 350
         width: 400
-        model: myModel
+        model: entrymodel
 
 
         TableViewColumn {
-            role: "res"; title: "Ressource"; width: 218
+            role: "resource"; title: "Ressource"; width: 218
         }
 
         TableViewColumn {
-            role: "tfrom"; title: "From"; width: 90
+            role: "timefrom"; title: "From"; width: 90
         }
         TableViewColumn {
-            role: "tto"; title: "To"; width: 90
+            role: "timeto"; title: "To"; width: 90
         }
     }
 
     ListModel {
-            id: myModel
-            ListElement {
-                desc : "Besprechung"
-                res :   "Raum 1"
-                dfrom : "12.01.2018"
-                tfrom : "11:00"
-                tto :   "12:00"
-                dto :   "12.01.2018"
-
-            }
-
-            ListElement {
-                desc : "Gestaltung"
-                res :   "Raum 2"
-                dfrom : "12.01.2018"
-                tfrom : "14:00"
-                tto :   "14:30"
-                dto :   "12.01.2018"
-
-            }
-
-            ListElement {
-
-                desc :  "Beides"
-                res :   "Firmenauto 1"
-                dfrom : "12.01.2018"
-                tfrom : "14:00"
-                tto :   "17:00"
-                dto :   "12.01.2018"
-            }
-
+            id: entrymodel
         }
 
     Button {

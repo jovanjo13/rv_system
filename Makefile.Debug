@@ -62,6 +62,7 @@ DIST          = assets/main.qml \
 		assets/keyboard/KeyboardItem.qml \
 		assets/Input.qml \
 		assets/Detail.qml \
+		assets/DateSelection.qml \
 		/opt/gelin2-17.11-imx6/host/usr/mkspecs/features/spec_pre.prf \
 		/opt/gelin2-17.11-imx6/host/mkspecs/common/unix.conf \
 		/opt/gelin2-17.11-imx6/host/mkspecs/common/linux.conf \
@@ -229,8 +230,8 @@ compiler_rcc_clean:
 		assets/Input.qml \
 		assets/Gbackground.png \
 		assets/Newentry.qml \
+		assets/DateSelection.qml \
 		assets/Add.qml \
-		assets/Detail.qml \
 		assets/main.qml \
 		assets/Home.qml \
 		assets/keyboard/keyboard_num.xml \
