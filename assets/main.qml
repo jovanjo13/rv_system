@@ -27,7 +27,10 @@ ApplicationWindow {
             property int lastIndex: home
 
             signal ent_pressed(string str)
-            signal edit(string name, string text)
+            signal edit(var obj, string name)
+
+            property string curDate: "2018-04-01"
+            signal resources_loaded(string o)
 
 
             Home {

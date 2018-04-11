@@ -41,21 +41,19 @@ Item {
     function getInput() {
         var id = add.edit_button
         var name
-        var text
+        var obj
 
         for(var i = 0; i < add.children.length; i++){
             if(add.children[i].tfID == id){
-                text = add.children[i].text
+                obj = add.children[i]
             }
 
             if(add.children[i].textID == id) {
                 name = add.children[i].text
             }
         }
-
-        slay.edit(name,text)
         slay.lastIndex = background.add
-        slay.currentIndex = background.input
+        slay.edit(obj, name)
     }
 
     function oneLine(text){

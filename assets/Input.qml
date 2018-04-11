@@ -6,6 +6,7 @@ import "./keyboard"
 
 Item {
     id: input_layout
+    property var textObject
 
     Keyboard {
         x: 0
@@ -44,9 +45,11 @@ Item {
         Connections{
             target: slay
             onEdit: {   //Parameter STR name STR text
+                slay.currentIndex = background.input
                 input_name.text = name
-                text_area.text = text
+                text_area.text = obj.text
                 text_area.cursorPosition = text_area.text.length
+                input_layout.textObject = obj
             }
         }
 
@@ -101,7 +104,8 @@ Item {
         }
 
         function ent_pressed() {
-            slay.ent_pressed(text_area.text)
+            textObject.text = text_area.text
+
             text_area.cursorPosition = 0
             text_area.text = ""
 
