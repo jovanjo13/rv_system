@@ -11,10 +11,36 @@ Item {
         textArea_description.text = ""
         textField_firstName.text = ""
         textField_lastName.text = ""
-        slid_h.hour = 12
-        slid_min.min = 30
+        slid_h.value = 0.5
+        slid_min.value = 0.5
         from_text.text = slay.stringToDate(slay.curDate)
         to_text.text = slay.stringToDate(slay.curDate)
+        time_from.text = "12:30"
+        time_to.text = "12:30"
+        pointer_from.visible = false
+        pointer_to.visible = true
+    }
+
+    function edit_entry(str){
+        var obj = JSON.parse(str)
+        textArea_description.text = obj.description
+        textField_firstName.text = obj.firstName
+        textField_lastName.text = obj.lastName
+
+        var h = obj.timeto.substring(0,2)
+        slid_h.value = h /23
+        var min = obj.timeto.substring(3,5)
+        slid_min.value = min /55
+
+        var hOld = obj.timefrom.substring(0,2)
+        slid_h.value = h /23
+        var minOld = obj.timefrom.substring(3,5)
+        slid_min.value = min /55
+
+        from_text.text = obj.datefrom
+        to_text.text = obj.dateto
+        time_from.text = obj.timefrom
+        time_to.text = obj.timeto
         pointer_from.visible = false
         pointer_to.visible = true
     }
@@ -183,12 +209,16 @@ Item {
     Connections{
         target: slay
         onResources_loaded:  {
-            new_entry()
-
             var resources = JSON.parse(o)
             resource_model.clear()
             for(var i = 0; i < resources.length; i++){
                 resource_model.append(resources[i])
+            }
+
+            if(state === background.neww){
+                new_entry()
+            }else{
+                edit_entry(data)
             }
         }
     }
@@ -218,6 +248,7 @@ Item {
         }
 
         property int hour: 12
+        property double old_val: 0.5
     }
 
     Slider {
@@ -241,12 +272,13 @@ Item {
         }
 
         property int min: 30
+        property double old_val: 0.5
     }
 
     Text {
         id: text_fromN
         x: 340
-        y: 124
+        y: 134
         width: 45
         height: 29
         text: qsTr("From")
@@ -257,7 +289,7 @@ Item {
     Text {
         id: from_text
         x: 423
-        y: 124
+        y: 134
         width: 95
         height: 29
         text: "2018-01-01"
@@ -267,7 +299,7 @@ Item {
     Text {
         id: text_toN
         x: 340
-        y: 160
+        y: 170
         width: 45
         height: 30
         text :  "To"
@@ -278,7 +310,7 @@ Item {
     Text {
         id: to_text
         x: 423
-        y: 161
+        y: 171
         width: 95
         height: 29
         text: "2018-01-01"
@@ -288,26 +320,29 @@ Item {
     Button {
         id: button_changeDate
         x: 693
-        y: 138
+        y: 148
         width: 85
         height: 35
         text: qsTr("From")
         onClicked: {
+            var oldH = slid_h.value
+            var oldMIN = slid_min.value
+
             if(pointer_from.visible == true){
                 pointer_from.visible = false
                 text = "From"
                 pointer_to.visible = true
-                slid_h.value = time_from.text.substring(0,2) /23
-                slid_min.value = time_from.text.substring(3,5) *60 /5
-
             }else{
                 pointer_to.visible = false
                 pointer_from.visible = true
                 text = "To"
-                slid_h.value = time_to.text.substring(0,2) /23
-                slid_min.value = time_to.text.substring(3,5) *60 /5
-
             }
+
+            slid_h.value = slid_h.old_val
+            slid_min.value = slid_min.old_val
+            slid_h.old_val = oldH
+            slid_min.old_val = oldMIN
+            console.log(slid_h.hour + ":" + slid_min.min)
         }
     }
 
@@ -323,7 +358,7 @@ Item {
     Text {
         id: pointer_from
         x: 391
-        y: 125
+        y: 135
         width: 31
         height: 29
         text: qsTr("->")
@@ -333,7 +368,7 @@ Item {
     Text {
         id: pointer_to
         x: 391
-        y: 161
+        y: 171
         width: 31
         height: 29
         text: qsTr("->")
@@ -344,7 +379,7 @@ Item {
     Button {
         id: button
         x: 616
-        y: 202
+        y: 205
         width: 162
         height: 33
         text: "Select Date"
@@ -384,7 +419,7 @@ Item {
     Text {
         id: time_from
         x: 611
-        y: 125
+        y: 135
         width: 76
         height: 28
         text: slid_h.hour + ":" + slid_min.min
@@ -395,7 +430,7 @@ Item {
     Text {
         id: time_to
         x: 611
-        y: 161
+        y: 171
         width: 76
         height: 28
         text: slid_h.hour + ":" + slid_min.min

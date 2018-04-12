@@ -8,7 +8,6 @@ Item {
     width:800
     id: home
 
-
     Calendar {
         id: calendar
         x: 400         //Change for relationship
@@ -21,7 +20,6 @@ Item {
             console.log(d)
             slay.curDate = d
             get_list()
-
         }
 
 
@@ -105,11 +103,17 @@ Item {
         TableViewColumn {
             role: "timeto"; title: "To"; width: 90
         }
+        onClicked: function(row){
+            slay.get_ressources(function(r){
+                slay.resources_loaded(r, background.edit, JSON.stringify(entrymodel.get(row)))
+                slay.currentIndex = background.newentry
+                })
+        }
     }
 
     ListModel {
             id: entrymodel
-        }
+    }
 
     Button {
         id: new_entry_button
@@ -120,31 +124,10 @@ Item {
         height: 65
         text: "New Entry"
         onClicked: function() {
-            get_ressources(function(r){
-                    slay.resources_loaded(r)
+            slay.get_ressources(function(r){
+                    slay.resources_loaded(r, background.neww, "")
                     slay.currentIndex = background.newentry
             })
-
-
-        }
-
-
-
-        function get_ressources(callback){
-            var req = new XMLHttpRequest();
-            req.open("GET", background.url + "sql_get/resources");
-
-            req.onreadystatechange = function() {
-              if (req.readyState === XMLHttpRequest.DONE) {
-                  var r = JSON.parse(req.responseText)
-                  console.log(JSON.stringify(r))
-                  callback(JSON.stringify(r))
-              }
-            }
-            req.onerror = function(){
-                console.log("get_ressources ERROR")
-            }
-            req.send()
         }
     }
 
@@ -158,10 +141,9 @@ Item {
         text: "Add Component"
 
         onClicked: function() {
+            slay.load_section()
             slay.currentIndex = background.add
 
         }
     }
-
-
 }

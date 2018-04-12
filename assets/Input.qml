@@ -44,7 +44,7 @@ Item {
 
         Connections{
             target: slay
-            onEdit: {   //Parameter STR name STR text
+            onEdit: {   //parameters STR name STR text
                 slay.currentIndex = background.input
                 input_name.text = name
                 text_area.text = obj.text
@@ -168,7 +168,5 @@ Item {
                 //Zurücksetzen
             }
         }
-
-
     }
 }

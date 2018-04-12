@@ -189,7 +189,7 @@ Item {
                         urlComponent = "persons"
                         comp.firstName = textField1.text
                         comp.lastName = textField2.text
-                        comp.section = ""
+                        comp.section = listView
                         break
             }
 
@@ -202,17 +202,14 @@ Item {
 
            var req = new XMLHttpRequest();
            req.open("POST", url + "sql_post/" + urlComponent);
-           req.setRequestHeader('Content-type','application/json');
-           //req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+           req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
            req.onreadystatechange = function() {
              if (req.readyState == XMLHttpRequest.DONE) {
-               // what you want to be done when request is successfull
                  console.log(req.responseText)
-                 console.log("ja" + JSON.stringify(req.responseText))
+                 console.log(JSON.stringify(req.responseText))
              }
            }
            req.onerror = function(){
-               // what you want to be done when request failed
                console.log("error")
            }
             //console.log(req.toString())
@@ -356,11 +353,6 @@ Item {
         }
         req.send()
     }
-
-    function post_entry(){
-
-    }
-
 }
 
 

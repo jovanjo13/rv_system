@@ -10,13 +10,16 @@ ApplicationWindow {
     visible: true
     width: 800
     height: 480
-    color: "#253746"
+    color: "white"
 
     property int home: 0
     property int newentry: 1
     property int add: 2
     property int dateSelection: 3
     property int input: 4
+
+    property int neww: 0
+    property int edit: 1
     property string url: "http://192.168.0.26:30000/"
 
     StackLayout{
@@ -30,30 +33,36 @@ ApplicationWindow {
             signal edit(var obj, string name)
 
             property string curDate: "2018-04-01"
-            signal resources_loaded(string o)
+            signal resources_loaded(string o, int state, string data)
+            signal load_section()
 
             signal select_date(var obj)
 
+            Home {}
 
-            Home {
+            Newentry {}
 
-            }
+            Add {}
 
-            Newentry {
+            DateSelection{}
 
-            }
+            Input {}
 
-            Add {
+            function get_ressources(callback){
+                var req = new XMLHttpRequest();
+                req.open("GET", background.url + "sql_get/resources");
 
-            }
-
-            DateSelection{
-
-            }
-
-            Input {
-
-
+                req.onreadystatechange = function() {
+                  if (req.readyState === XMLHttpRequest.DONE) {
+                      var r = JSON.parse(req.responseText)
+                      console.log(JSON.stringify(r))
+                      callback(JSON.stringify(r))
+                  }
+                }
+                req.onerror = function(){
+                    console.log("get_ressources ERROR")
+                }
+                req.send()
             }
 
             function stringToDate(date){
@@ -66,7 +75,6 @@ ApplicationWindow {
             }
 
             function dateToString(date){
-                //var da = JSON.stringify(date)
                 var d = date.substring(0,2)
                 var m = date.substring(3,5)
                 var y = date.substring(6,10)
@@ -75,8 +83,4 @@ ApplicationWindow {
             }
 
         }
-
-
-
-
 }
