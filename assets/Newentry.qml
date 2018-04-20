@@ -8,6 +8,11 @@ Item {
     id: item1
 
     function new_entry(){
+        lv.visible = true
+        text_res.visible = true
+        button_firstName.visible = true
+        button_lastName.visible = true
+        button_delete.visible = false
         textArea_description.text = ""
         textField_firstName.text = ""
         textField_lastName.text = ""
@@ -26,6 +31,14 @@ Item {
         textArea_description.text = obj.description
         textField_firstName.text = obj.firstName
         textField_lastName.text = obj.lastName
+        button_delete.visible = true
+        lv.visible = false
+        text_res.visible = false
+        button_firstName.visible = false
+        button_lastName.visible = false
+        pointer_from.visible = false
+        pointer_to.visible = true
+
 
         var h = obj.timeto.substring(0,2)
         slid_h.value = h /23
@@ -160,7 +173,31 @@ Item {
         y: 418
         text: qsTr("Save")
         onClicked: {
-
+            var req = new XMLHttpRequest();
+            req.open("POST", background.url + "sql_post/entry");
+            req.setRequestHeader('Content-type','application/json');
+            //req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            req.onreadystatechange = function() {
+              if (req.readyState == XMLHttpRequest.DONE) {
+                // what you want to be done when request is successfull
+                  console.log(req.responseText)
+              }
+            }
+            req.onerror = function(){
+              // what you want to be done when request failed
+            }
+            //console.log(req.toString())
+            var e = {}
+            e.firstName = textField_firstName.text
+            e.lastName = textField_lastName.text
+            e.resource = resource_model.get(lv.currentIndex).resource
+            e.section = "Software"
+            e.description = textArea_description.text
+            e.datefrom = slay.dateToString(from_text.text) +  " " + time_from.text
+            e.dateto = slay.dateToString(to_text.text) +  " " + time_to.text
+            var str = JSON.stringify(e)
+            console.log(str)
+            req.send(str)
         }
     }
 
@@ -171,7 +208,6 @@ Item {
         text: qsTr("Cancel")
 
         onClicked: function() {
-            //TODO delete all
             slay.currentIndex = background.home
         }
     }
@@ -236,19 +272,29 @@ Item {
         width: 438
         height: 28
         value: 0.5
-        onValueChanged: function(){
-            console.log(Math.round(slid_h.value * 23))
+        onValueChanged: {
             hour = Math.round(slid_h.value * 23)
-
-            if(pointer_from.visible == true){
-                time_from.text = slid_h.hour + ":" + slid_min.min
-            }else{
-                time_to.text = slid_h.hour + ":" + slid_min.min
-            }
+            sliderChanged()
         }
+            function sliderChanged(){
+                var h = hour
+                var m = slid_min.min
+
+                if(h < 10){
+                    h = "0" + h
+                }
+                if(m < 10){
+                    m = "0" + m
+                }
+
+                if(pointer_from.visible == true){
+                    time_from.text = h + ":" + m
+                }else{
+                    time_to.text = h + ":" + m
+                }
+            }
 
         property int hour: 12
-        property double old_val: 0.5
     }
 
     Slider {
@@ -259,20 +305,13 @@ Item {
         height: 28
         value: 0.5
         onValueChanged: function(){
-            //console.log(slid_h.value * 12)
             var val = Math.round(slid_min.value * 11)
-            console.log(val * 5)
             min = val * 5
-
-            if(pointer_from.visible == true){
-                time_from.text = slid_h.hour + ":" + slid_min.min
-            }else{
-                time_to.text = slid_h.hour + ":" + slid_min.min
-            }
+            console.log(min)
+            slid_h.sliderChanged()
         }
 
         property int min: 30
-        property double old_val: 0.5
     }
 
     Text {
@@ -325,24 +364,30 @@ Item {
         height: 35
         text: qsTr("From")
         onClicked: {
-            var oldH = slid_h.value
-            var oldMIN = slid_min.value
 
             if(pointer_from.visible == true){
                 pointer_from.visible = false
                 text = "From"
                 pointer_to.visible = true
+                setSliders(1)
             }else{
                 pointer_to.visible = false
                 pointer_from.visible = true
                 text = "To"
+                setSliders(0)
             }
+        }
 
-            slid_h.value = slid_h.old_val
-            slid_min.value = slid_min.old_val
-            slid_h.old_val = oldH
-            slid_min.old_val = oldMIN
-            console.log(slid_h.hour + ":" + slid_min.min)
+        function setSliders(ft){
+            if(ft){     //To
+                slid_h.value = time_to.text.substring(0,2) /23
+                slid_min.value = time_to.text.substring(3,5) /55
+                console.log(time_to.text.substring(3,5))
+            }else{      //From
+                slid_h.value = time_from.text.substring(0,2) /23
+                slid_min.value = time_from.text.substring(3,5) /55
+                console.log(time_from.text.substring(3,5))
+            }
         }
     }
 
@@ -422,7 +467,7 @@ Item {
         y: 135
         width: 76
         height: 28
-        text: slid_h.hour + ":" + slid_min.min
+        text: ""
         font.pointSize: 11
         verticalAlignment: Text.AlignVCenter
     }
@@ -433,7 +478,7 @@ Item {
         y: 171
         width: 76
         height: 28
-        text: slid_h.hour + ":" + slid_min.min
+        text: ""
         verticalAlignment: Text.AlignVCenter
         font.pointSize: 11
     }

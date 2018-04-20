@@ -56,6 +56,8 @@ Item {
 
     function oneLine(text){
         clear()
+        listView.visible = false
+        text3.visible = false
         text2.text = text
         text2.visible = true
         textField2.visible = true
@@ -113,6 +115,9 @@ Item {
             rbutton = 2
             clear()
 
+            slay.load_section()
+            listView.visible = true
+            text3.visible = true
             text2.text = "Last name"
             text2.visible = true
             textField2.visible = true
@@ -182,14 +187,14 @@ Item {
 
                 case 1: //Department
                         urlComponent = "department"
-                        comp.department = textField2.text
+                        comp.section = textField2.text
                         break
 
                 case 2: //Person
                         urlComponent = "persons"
                         comp.firstName = textField1.text
                         comp.lastName = textField2.text
-                        comp.section = listView
+                        comp.section = department_model.get(listView.currentIndex).section
                         break
             }
 
@@ -202,17 +207,23 @@ Item {
 
            var req = new XMLHttpRequest();
            req.open("POST", url + "sql_post/" + urlComponent);
-           req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-           req.onreadystatechange = function() {
+           //req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+           req.setRequestHeader("Content-type","application/json")
+            req.onreadystatechange = function() {
              if (req.readyState == XMLHttpRequest.DONE) {
                  console.log(req.responseText)
-                 console.log(JSON.stringify(req.responseText))
+                 if(req.responseText == "Insert Done"){
+                     slay.currentIndex = background.home
+                     return
+                 }
+                 console.log("Failed Insertion")
              }
            }
            req.onerror = function(){
                console.log("error")
            }
             //console.log(req.toString())
+            console.log(strData)
             req.send(strData)
         }
     }
@@ -254,24 +265,13 @@ Item {
     }
 
 
-    Button {
-        id: button_reset
-        x: 769
-        y: 8
-        width: 23
-        height: 27
-        text: "R"
-        onClicked: function(){
-            console.log("reset")
-        }
-    }
-
     ListView {
         id: listView
         x: 486
         y: 248
         width: 227
-        height: 164
+        height: 154
+        visible: false
 
         model: department_model
         delegate: Item{
@@ -299,18 +299,6 @@ Item {
 
     ListModel {
         id: department_model
-
-        ListElement{
-            section: "Software"
-        }
-
-        ListElement{
-            section: "Hardware"
-        }
-
-        ListElement{
-            section: "Marketing"
-        }
     }
 
     Connections {
@@ -332,6 +320,7 @@ Item {
         y: 272
         width: 124
         height: 24
+        visible: false
         text: qsTr("Department")
         font.pixelSize: 14
         verticalAlignment: Text.AlignVCenter
@@ -344,7 +333,7 @@ Item {
         req.onreadystatechange = function() {
           if (req.readyState === XMLHttpRequest.DONE) {
               var r = JSON.parse(req.responseText)
-              console.log(JSON.stringify(r))
+              console.log(JSON.stringify(req.responseText))
               callback(JSON.stringify(r))
           }
         }
@@ -354,6 +343,3 @@ Item {
         req.send()
     }
 }
-
-
-
