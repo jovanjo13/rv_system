@@ -164,8 +164,6 @@ Item {
             text: qsTr("Cancel")
             onClicked: function(){
                 slay.currentIndex = slay.lastIndex
-
-                //Zurücksetzen
             }
         }
     }

@@ -13,14 +13,11 @@ Item {
         y: 0
         width: 800
         height: 480
-
         property var dateText
-
         onDoubleClicked: {
             console.log("double")
             var d = JSON.stringify(date).substring(1,11)
             var d  = slay.stringToDate(d)
-            console.log(d)
             dateText.text = d
             slay.currentIndex = background.newentry
         }

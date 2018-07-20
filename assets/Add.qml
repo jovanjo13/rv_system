@@ -10,6 +10,7 @@ Item {
     property int edit_button: 1
     property int rbutton: 0
 
+
     Connections{
         target: slay
         onEnt_pressed: {
@@ -17,14 +18,23 @@ Item {
                 return
             }
             setInput(str)
-
         }
 
+    }
+
+    function set_resource_first(){
+        button_department.checked = false
+        button_person.checked = false
+        button_ressource.checked = true
+        rbutton = 0
+        oneLine("Resource")
     }
 
     function clear() {
         textField2.text = ""
         textField1.text = ""
+        notification.text = ""
+        button_deleteAll.visible = false
     }
 
     function setInput(str) {
@@ -55,6 +65,7 @@ Item {
     }
 
     function oneLine(text){
+        notification.text = ""
         clear()
         listView.visible = false
         text3.visible = false
@@ -68,6 +79,39 @@ Item {
     }
 
 
+
+    ListView {
+        id: listView
+        x: 486
+        y: 234
+        width: 227
+        height: 157
+        z: -1
+        visible: false
+
+        model: department_model
+        delegate: Item{
+            width: parent.width
+            height: 30
+
+            Text{
+                text:   section
+            }
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    listView.currentIndex = index
+                }
+
+            }
+        }
+
+        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+        focus: true
+
+
+    }
+
     RadioButton{
         id: button_ressource
         x: 41
@@ -75,15 +119,16 @@ Item {
         width: 200
         height: 45
         checked: true
-        text: "Ressource"
+        text: "Resource"
         onClicked: {
             button_department.checked = false
             button_person.checked = false
             rbutton = 0
-            oneLine("Ressource")
+            oneLine("Resource")
         }
 
     }
+
 
     RadioButton{
         text: "Department"
@@ -101,6 +146,7 @@ Item {
         }
     }
 
+
     RadioButton{
         id: button_person
         x: 41
@@ -110,6 +156,7 @@ Item {
         text: "Person"
         checked: false
         onClicked: {
+            notification.text = ""
             button_ressource.checked = false
             button_department.checked = false
             rbutton = 2
@@ -129,6 +176,7 @@ Item {
         }
     }
 
+
     Text {
         id: text1
         property int textID: 0
@@ -141,6 +189,7 @@ Item {
 
     }
 
+
     TextField {
         id: textField1
         x: 404
@@ -149,6 +198,7 @@ Item {
         visible: false
     }
 
+
     Text {
         id: text2
         property int textID: 1
@@ -156,10 +206,11 @@ Item {
         y: 171
         width: 129
         height: 21
-        text: qsTr("Ressource")
+        text: qsTr("Resource")
         font.pixelSize: 15
 
     }
+
 
     TextField {
         id: textField2
@@ -170,63 +221,70 @@ Item {
 
 
 
+
     Button {
         id: button_save
         x: 484
         y: 418
         text: qsTr("Save")
-        onClicked: {
 
+        onClicked: {
             var urlComponent
             var comp = {}
             switch(rbutton){
-                case 0: //Resource
-                        urlComponent = "resources"
-                        comp.resource = textField2.text
-                        break
+            case 0: //Resource
+                urlComponent = "resources"
+                comp.resource = textField2.text
+                break
 
-                case 1: //Department
-                        urlComponent = "department"
-                        comp.section = textField2.text
-                        break
+            case 1: //Department
+                urlComponent = "department"
+                comp.section = textField2.text
+                break
 
-                case 2: //Person
-                        urlComponent = "persons"
-                        comp.firstName = textField1.text
-                        comp.lastName = textField2.text
-                        comp.section = department_model.get(listView.currentIndex).section
-                        break
+            case 2: //Person
+                urlComponent = "persons"
+                comp.firstName = textField1.text
+                comp.lastName = textField2.text
+                comp.section = department_model.get(listView.currentIndex).section
+                break
             }
 
-            console.log(JSON.stringify(comp) + " " + urlComponent)
+            var ls = rbutton == 2 ? [textField1, textField2] : [textField2]
+            if(slay.empty_fields(ls, notification)){
+                return
+            }
+
             add_component(JSON.stringify(comp), urlComponent)
             clear()
-
+            set_resource_first()
         }
         function add_component(strData, urlComponent){
 
-           var req = new XMLHttpRequest();
-           req.open("POST", url + "sql_post/" + urlComponent);
-           //req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-           req.setRequestHeader("Content-type","application/json")
+            var req = new XMLHttpRequest();
+            req.open("POST", url + "sql_post/" + urlComponent);
+            //req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            req.setRequestHeader("Content-type","application/json")
             req.onreadystatechange = function() {
-             if (req.readyState == XMLHttpRequest.DONE) {
-                 console.log(req.responseText)
-                 if(req.responseText == "Insert Done"){
-                     slay.currentIndex = background.home
-                     return
-                 }
-                 console.log("Failed Insertion")
-             }
-           }
-           req.onerror = function(){
-               console.log("error")
-           }
-            //console.log(req.toString())
-            console.log(strData)
+                if (req.readyState == XMLHttpRequest.DONE) {
+                    console.log(req.responseText)
+                    if(req.responseText == "Insert Done"){
+                        slay.currentIndex = background.home
+                        return
+                    }else{
+                        console.log("Failed Insertion")
+                        notification.text = "Failed Insertion"
+                    }
+                }
+            }
+            req.onerror = function(){
+                console.log("httpERROR")
+                notification.text = "Connection ERROR"
+            }
             req.send(strData)
         }
     }
+
 
     Button {
         id: button_cancel
@@ -235,10 +293,13 @@ Item {
         text: qsTr("Cancel")
 
         onClicked: function() {
+            button_deleteAll.visible = false
             clear()
+            set_resource_first()
             slay.currentIndex = background.home
         }
     }
+
 
     Button {
         id: button1
@@ -251,6 +312,7 @@ Item {
             getInput()
         }
     }
+
 
     Button {
         id: button2
@@ -265,41 +327,11 @@ Item {
     }
 
 
-    ListView {
-        id: listView
-        x: 486
-        y: 248
-        width: 227
-        height: 154
-        visible: false
-
-        model: department_model
-        delegate: Item{
-            width: parent.width
-            height: 30
-
-            Text{
-                text:   section
-            }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    console.log("clicked " + index)
-                    listView.currentIndex = index
-                }
-
-            }
-        }
-
-        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
-        focus: true
-
-
-    }
 
     ListModel {
         id: department_model
     }
+
 
     Connections {
         target: slay
@@ -314,6 +346,7 @@ Item {
             )}
     }
 
+
     Text {
         id: text3
         x: 283
@@ -326,19 +359,94 @@ Item {
         verticalAlignment: Text.AlignVCenter
     }
 
+    Text {
+        id: notification
+        x: 283
+        y: 420
+        width: 172
+        height: 23
+        color: "#f42222"
+        text: qsTr("")
+        font.pointSize: 9
+    }
+
+    MouseArea {
+        id: mouseArea
+        x: 0
+        y: 431
+        width: 55
+        height: 49
+        onDoubleClicked: {
+            if(button_deleteAll.visible){
+                button_deleteAll.visible = false
+            }else{
+                button_deleteAll.visible = true
+            }
+        }
+    }
+
+    Button {
+        id: button_deleteAll
+        x: 99
+        y: 420
+        text: qsTr("Delete all")
+        visible: false
+        onClicked: {
+            delete_all(function(){
+                clear()
+                set_resource_first()
+                slay.reload_list()
+                slay.currentIndex = background.home
+            })
+        }
+
+        function delete_all(cb){
+            var req = new XMLHttpRequest();
+            req.open("POST", url + "sql_post/delete_data");
+            req.setRequestHeader("Content-type","application/json")
+            req.onreadystatechange = function() {
+                if (req.readyState == XMLHttpRequest.DONE) {
+                    if(req.responseText == "All deleted"){
+                        slay.currentIndex = background.home
+                        visible = false
+                        cb()
+                    }else{
+                        console.log("Delete failed")
+                        notification.text = "Delete failed"
+                    }
+                }
+            }
+            req.onerror = function(){
+                console.log("httpERROR")
+                notification.text = "Connection ERROR"
+            }
+            var test = {"test":"test"}
+            req.send(JSON.stringify(test))
+        }
+    }
+
+
     function get_sections(callback){
         var req = new XMLHttpRequest();
         req.open("GET", background.url + "sql_get/department");
 
         req.onreadystatechange = function() {
-          if (req.readyState === XMLHttpRequest.DONE) {
-              var r = JSON.parse(req.responseText)
-              console.log(JSON.stringify(req.responseText))
-              callback(JSON.stringify(r))
-          }
+            if (req.readyState === XMLHttpRequest.DONE) {
+                if(req.responseText == "[]"){
+                    button_person.visible = false
+                    callback("[]")
+                }else{
+                    button_person.visible = true
+                    var r = JSON.parse(req.responseText)
+                    callback(JSON.stringify(r))
+                }
+
+
+            }
         }
         req.onerror = function(){
             console.log("get_department ERROR")
+            notification.text = "Connection ERROR"
         }
         req.send()
     }

@@ -20,7 +20,8 @@ ApplicationWindow {
 
     property int neww: 0
     property int edit: 1
-    property string url: "http://192.168.0.26:30000/"
+    //property string url: "http://192.168.0.26:30000/"
+    property string url: "http://localhost:30000/"
 
     StackLayout{
             id: slay
@@ -32,11 +33,13 @@ ApplicationWindow {
             signal ent_pressed(string str)
             signal edit(var obj, string name)
 
-            property string curDate: "2018-04-01"
+            property string curDate: "2018-07-01"
             signal resources_loaded(string o, int state, string data)
             signal load_section()
 
             signal select_date(var obj)
+
+            signal reload_list()
 
             Home {}
 
@@ -47,6 +50,17 @@ ApplicationWindow {
             DateSelection{}
 
             Input {}
+
+            function empty_fields(ls, notification){
+                for(var i = 0; i < ls.length; i++){
+                    if(!ls[i].text.length){
+                        notification.text = "empty insertions"
+                        return true
+                    }
+                }
+                notification.text = ""
+                return false
+            }
 
             function get_ressources(callback){
                 var req = new XMLHttpRequest();

@@ -14,7 +14,6 @@ Item {
         y: parent.y
         width: 400
         height: parent.height
-        selectedDate: "2018-04-01"
         onClicked: function(date){
             var d = JSON.stringify(date).substring(1,11)
             console.log(d)
@@ -24,35 +23,10 @@ Item {
 
 
 
-        function test(){
-            var http = new XMLHttpRequest()
-            var url = background.url + "sql_get"
-            var params = "num=22&num2=333";
-            http.open("POST", url, true);
-
-            // Send the proper header information along with the request
-            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            //http.setRequestHeader("Content-type","application/json")
-            //http.setRequestHeader("Content-length", params.length);
-            //http.setRequestHeader("Connection", "close");
-
-            http.onreadystatechange = function() { // Call a function when the state changes.
-                if (http.readyState == 4) {
-                    if (http.status == 200) {
-                        console.log("ok")
-                    } else {
-                        console.log("error: " + http.status)
-                    }
-                }
-            }
-            http.send();
-        }
-
-        function get_list(){
+        function get_list(){    //for one date
             var date = slay.curDate
             var req = new XMLHttpRequest();
             req.open("GET", background.url + "sql_get?date=" + slay.curDate);
-            //req.setRequestHeader('Content-type','application/json');
             req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
             req.onreadystatechange = function() {
@@ -81,6 +55,13 @@ Item {
 
             req.send()
 
+        }
+    }
+
+    Connections{
+        target: slay
+        onReload_list: {
+            calendar.get_list()
         }
     }
 
