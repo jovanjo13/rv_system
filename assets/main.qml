@@ -20,8 +20,8 @@ ApplicationWindow {
 
     property int neww: 0
     property int edit: 1
-    //property string url: "http://192.168.0.26:30000/"
-    property string url: "http://localhost:30000/"
+    property string url: "http://192.168.0.26:30000/"
+    //property string url: "http://localhost:30000/"
 
     StackLayout{
             id: slay
